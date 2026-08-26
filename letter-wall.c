@@ -38,7 +38,6 @@ int main(void) {
   XColor xcolors[PALETTE_N];
   char* grid_shape;
   unsigned int* grid_color;
-  Frame grid;
   int i;
   unsigned int snow_frame = 0;
 
@@ -60,7 +59,7 @@ int main(void) {
   cols = scr_w / CELL_W;
   rows = scr_h / CELL_H;
 
-  font = XLoadQueryFont(dpy, fontname);
+  font = XLoadQueryFont(dpy,fontname);
   if (!font) {
     fprintf(stderr, "letter-wall:could not load font '%s'\n",fontname);
     XCloseDisplay(dpy);
@@ -84,7 +83,7 @@ int main(void) {
   /*In this section we initiallize the background*/
   grid_shape = malloc(sizeof(char) * cols * rows);
   grid_color = malloc(sizeof(unsigned int) * cols * rows);
-  grid = {grid_shape,grid_color,cols,rows, cols / 2, rows / 2};
+  Frame grid = {grid_shape,grid_color,cols,rows, cols / 2, rows / 2};
   
   if (!grid_shape || !grid_color) {
     fprintf(stderr, "letter-wall: out of memory\n");
@@ -121,7 +120,7 @@ int main(void) {
     for (y = 0; y < snow_width; y++) {
       for (x = 0; x < snow_height; x++) {
 	/*getting the coordinates for the relevant cell*/
-        int dx = px - x + snow_cx, dy = py - y + snow_cy;
+        int dx = px - (int) x + (int) snow_cx, dy = py - (int) y + (int) snow_cy;
 	/*getting the addresses for the relevan cell*/
         char *l = &grid.shape[dy * cols + dx];
 	unsigned int *c = &grid.color[dy * cols + dx];
@@ -139,10 +138,9 @@ int main(void) {
 
     for (y = 0; y < rows; y++) {
       for (x = 0; x < cols; x++) {
-	unsigned int *c = &grid.color[y * cols + x];
-        char s[2] = {' ',' '};
-        XSetForeground(dpy, gc, xcolors[*c].pixel);
-	XDrawString(dpy,pixmap,gc,x * CELL_W,y * CELL_H + CELL_H - 4,s,1);
+	unsigned int c = grid.color[y * cols + x];
+        XSetForeground(dpy, gc, xcolors[c].pixel);
+	XDrawString(dpy,pixmap,gc,0,0,grid_shape,cols*rows);
       }
     }
 

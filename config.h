@@ -1,4 +1,4 @@
-static char *fontname = "spleen";
+char fontname[] = "fixed";
 
 static const char CHARSET[] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
