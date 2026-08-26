@@ -10,15 +10,10 @@
 #include <unistd.h>
 #include <err.h>
 
-#define CELL_W 10
+#define CELL_W 8
 #define CELL_H 16
 #define FRAME_USEC 66000
 
-static const char CHARSET[] = "!@#$%^&()_+-=<>?/\\|{}[]~.,;:01";
-static const char *PALETTE[] = {
-    "#b994dd", "#afe7d8", "#ff6188", "#78dce8",
-    "#ffd866", "#a9dc76", "#fc9867"
-};
 #define PALETTE_N (sizeof(PALETTE) / sizeof(PALETTE[0]))
 
 typedef struct {
@@ -45,7 +40,9 @@ int main(void) {
 
   dpy = XOpenDisplay(NULL);
   if (!dpy) {
-    fprintf(stderr, "letter-wall: cannot open X display\n");
+    char *disErr = "letter-wall: Dunno why I couldn't open X display,"
+      "help?!\n";
+    fprintf(stderr,disErr);
     return 1;
   }
 
@@ -58,9 +55,9 @@ int main(void) {
   cols = scr_w / CELL_W;
   rows = scr_h / CELL_H;
 
-  font = XLoadQueryFont(dpy, "fixed");
+  font = XLoadQueryFont(dpy, fontname);
   if (!font) {
-    fprintf(stderr, "could not load font 'fixed\n");
+    fprintf(stderr, "letter-wall:could not load font '%s'\n",fontname);
     XCloseDisplay(dpy);
     return 1;
   }
@@ -85,20 +82,26 @@ int main(void) {
     return 1;
   }
 
-  for (i = 0; i < cols * rows; i++) {
-    grid[i].ch = CHARSET[rand() % (sizeof(CHARSET) - 1)];
-    grid[i].color_idx = rand() % (PALETTE_N);
-  }
-
+  /*This for cycle contains the actual logic of the stuff
+   that is going to happen in the desktop background UwUr*/
+  
   for (;;) {
     Window ret_root, ret_child;
     int root_x, root_y, win_x, win_y;
     unsigned int mask;
     int px, py;
     int x, y;
+    
+    /*XQueryPointer is a function that capptures in the values of
+     root_x, root_y, win_x and win_y the position of the cursor
+     by reference*/
+    
+    XQueryPointer(dpy, root, &ret_root, &ret_child, &root_x, &root_y, &win_x,&win_y, &mask);
 
-    XQueryPointer(dpy, root, &ret_root, &ret_child, &root_x, &root_y, &win_x,
-                  &win_y, &mask);
+    /*this is just a coordinate tranformation to capture into
+     both px and py the position of the cursor from the point of
+    view of the characters UwUr*/
+    
     px = root_x / CELL_W;
     py = root_y / CELL_H;
 
