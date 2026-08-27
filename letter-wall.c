@@ -13,8 +13,8 @@
 #include "film.h"
 #include "config.h"
 
-#define CELL_W 8
-#define CELL_H 16
+#define CELL_W 6
+#define CELL_H 13
 #define FRAME_USEC 66000
 
 #define PALETTE_N (sizeof(PALETTE) / sizeof(PALETTE[0]))
@@ -66,6 +66,9 @@ int main(void) {
     return 1;
   }
 
+  /*diagnostic*/
+  fprintf(stderr,"width=%d ascent=%d descent=%d\n",font->max_bounds.width,font->max_bounds.ascent,font->max_bounds.descent);
+  
   for (i = 0; i < (int)PALETTE_N; i++) {
     if (!XParseColor(dpy, cmap, PALETTE[i], &xcolors[i]) ||
         !XAllocColor(dpy, cmap, &xcolors[i])) {
@@ -83,6 +86,10 @@ int main(void) {
   /*In this section we initiallize the background*/
   grid_shape = malloc(sizeof(char) * cols * rows);
   grid_color = malloc(sizeof(unsigned int) * cols * rows);
+  for (int i = 0; i < (int) (cols*rows);i++) {
+    grid_color[i] = 0;
+    grid_shape[i] = ' ';
+  }
   Frame grid = {grid_shape,grid_color,cols,rows, cols / 2, rows / 2};
   
   if (!grid_shape || !grid_color) {
@@ -139,8 +146,9 @@ int main(void) {
     for (y = 0; y < rows; y++) {
       for (x = 0; x < cols; x++) {
 	unsigned int c = grid.color[y * cols + x];
+	char s[] = {c,'\0'};
         XSetForeground(dpy, gc, xcolors[c].pixel);
-	XDrawString(dpy,pixmap,gc,0,0,grid_shape,cols*rows);
+	XDrawString(dpy,pixmap,gc,x * CELL_W,y * CELL_H + 13,s,1);
       }
     }
 
