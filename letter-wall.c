@@ -142,10 +142,14 @@ int main(void) {
 	unsigned int *c = &grid.color[dy * cols + dx];
 
 	/*assigning the corresponding color and letter to
-	  the cell UwUr*/
-
-	*l = snow_roll[snow_frame].shape[y * snow_width + x];
-	*c = snow_roll[snow_frame].color[y * snow_width + x];
+	  the cell checking boundaries UwUr*/
+	if ((dy * cols + dx < 0) ||
+	    (dy * cols + dx >= rows * cols)) {
+	  continue;
+	} else {
+	  *l = snow_roll[snow_frame].shape[y * snow_width + x];
+	  *c = snow_roll[snow_frame].color[y * snow_width + x];
+	}
       }
     }
 
