@@ -145,10 +145,10 @@ int main(void) {
 
     for (y = 0; y < rows; y++) {
       for (x = 0; x < cols; x++) {
-	unsigned int c = grid.color[y * cols + x];
+	unsigned int c = grid.shape[y * cols + x];
 	char s[] = {c,'\0'};
         XSetForeground(dpy, gc, xcolors[c].pixel);
-	XDrawString(dpy,pixmap,gc,x * CELL_W,y * CELL_H + 13,s,1);
+	XDrawString(dpy,pixmap,gc,x * CELL_W,y * CELL_H + 11,s,1);
       }
     }
 
