@@ -15,7 +15,7 @@
 
 #define CELL_W 6
 #define CELL_H 13
-#define FRAME_USEC 66000
+#define FRAME_USEC 130000
 
 #define PALETTE_N (sizeof(PALETTE) / sizeof(PALETTE[0]))
 
@@ -145,8 +145,9 @@ int main(void) {
 
     for (y = 0; y < rows; y++) {
       for (x = 0; x < cols; x++) {
-	unsigned int c = grid.shape[y * cols + x];
-	char s[] = {c,'\0'};
+	char l = grid.shape[y * cols + x];
+	unsigned int c = grid.color[y * cols + x];
+	char s[] = {l,'\0'};
         XSetForeground(dpy, gc, xcolors[c].pixel);
 	XDrawString(dpy,pixmap,gc,x * CELL_W,y * CELL_H + 11,s,1);
       }
