@@ -13,8 +13,6 @@
 #include "film.h"
 #include "config.h"
 
-#define CELL_W 6
-#define CELL_H 13
 #define FRAME_USEC 130000
 
 #define PALETTE_N (sizeof(PALETTE) / sizeof(PALETTE[0]))
@@ -40,8 +38,8 @@ int main(void) {
   unsigned int* grid_color;
   int i;
   unsigned int snow_frame = 0;
-
-  srand(time(NULL));
+  int CELL_W;
+  int CELL_H;
 
   dpy = XOpenDisplay(NULL);
   if (!dpy) {
@@ -56,9 +54,6 @@ int main(void) {
   scr_h = DisplayHeight(dpy, screen);
   cmap = DefaultColormap(dpy, screen);
 
-  cols = scr_w / CELL_W;
-  rows = scr_h / CELL_H;
-
   font = XLoadQueryFont(dpy,fontname);
   if (!font) {
     fprintf(stderr, "letter-wall:could not load font '%s'\n",fontname);
@@ -66,8 +61,14 @@ int main(void) {
     return 1;
   }
 
-  /*diagnostic*/
-  fprintf(stderr,"width=%d ascent=%d descent=%d\n",font->max_bounds.width,font->max_bounds.ascent,font->max_bounds.descent);
+  /*Once the font is loaded then we  setup the font dimensions and
+   the resolution of our background in characters UwUr <3*/
+  CELL_W = font->max_bounds.width;
+  CELL_H = (font->max_bounds.ascent) +
+    (font->max_bounds.descent);
+  
+  cols = scr_w / CELL_W;
+  rows = scr_h / CELL_H;
   
   for (i = 0; i < (int)PALETTE_N; i++) {
     if (!XParseColor(dpy, cmap, PALETTE[i], &xcolors[i]) ||
@@ -108,6 +109,14 @@ int main(void) {
     unsigned int mask;
     int px, py;
     unsigned int x, y;
+
+    /* There might be a better way. But in this cycle we
+     cleanup our baclground before redrawing UwUr <3*/
+
+    for (x = 0; x < cols * rows; x++) {
+      grid.shape[x] = ' ';
+      grid.color[x] = 0;
+    }
     
     /*XQueryPointer is a function that captures in the values of
      root_x, root_y, win_x and win_y the position of the cursor

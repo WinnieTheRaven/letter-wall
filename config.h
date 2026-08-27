@@ -1,6 +1,4 @@
-char fontname[] = "fixed";
-
-static const char CHARSET[] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+static const char fontname[] = "spleen-8x16";
 
 static const char *PALETTE[] = {
   /*The colors I've selected come from (literally) doom-outrun-electric*/
@@ -25,13 +23,16 @@ static const char *PALETTE[] = {
   "#204052", //cyan    
 };
 
+/* These parameters describe the animation that happens
+ behind your pointer UwUr <3 <3*/
+
 static const unsigned int snow_width = 11;
 static const unsigned int snow_height = 11;
 static const unsigned int snow_cx = 5;
 static const unsigned int snow_cy = 5;
 static const unsigned int snow_length = 3;
 
-char snow_shape0[121] =
+static char snow_shape0[121] =
   "    \\|/    "
 "   \\ v /   "
 "  \\ \\|/ /  "
@@ -44,7 +45,7 @@ char snow_shape0[121] =
 "   / ^ \\   "
 "    /|\\    ";
 
-unsigned int snow_color0[121] =
+static unsigned int snow_color0[121] =
   {0,0,0,0,18,17,18,0,0,0,0,
    0,0,0,18,0,16,0,18,0,0,0,
    0,0,18,0,18,17,18,0,18,0,0,
@@ -57,7 +58,7 @@ unsigned int snow_color0[121] =
    0,0,0,18,0,16,0,18,0,0,0,
    0,0,0,0,18,17,18,0,0,0,0};
 
-char snow_shape1[121] =
+static char snow_shape1[121] =
   "    -\\|    "
   "   - > |   "
   "  - -\\| |  "
@@ -70,7 +71,7 @@ char snow_shape1[121] =
   "   | < -   "
   "    |\\-    ";
 
-unsigned int snow_color1[121] =
+static unsigned int snow_color1[121] =
   {0,0,0,0,9,18,9,0,0,0,0,
    0,0,0,9,0,17,0,9,0,0,0,
    0,0,9,0,9,18,9,0,9,0,0,
@@ -83,7 +84,7 @@ unsigned int snow_color1[121] =
    0,0,0,9,0,17,0,9,0,0,0,
    0,0,0,0,9,18,9,0,0,0,0};
 
-char snow_shape2[121] =
+static char snow_shape2[121] =
   "    /-\\    "
   "   / ^ \\   "
   "  / /-\\ \\  "
@@ -96,7 +97,7 @@ char snow_shape2[121] =
   "   \\ v /   "
   "    \\-/    ";
 
-unsigned int snow_color2[121] =
+static unsigned int snow_color2[121] =
   {0,0,0,0,16,9,16,0,0,0,0,
    0,0,0,16,0,18,0,16,0,0,0,
    0,0,16,0,16,9,16,0,16,0,0,
@@ -109,7 +110,7 @@ unsigned int snow_color2[121] =
    0,0,0,16,0,18,0,16,0,0,0,
    0,0,0,0,16,9,16,0,0,0,0};
 
-char snow_shape3[121] =
+static char snow_shape3[121] =
   "    |/-    "
   "   | < -   "
   "  | |/- -  "
@@ -122,7 +123,7 @@ char snow_shape3[121] =
   "   - > |   "
   "    -/|    ";
 
-int snow_color3[121] =
+static unsigned int snow_color3[121] =
   {0,0,0,0,17,16,17,0,0,0,0,
    0,0,0,17,0,9,0,17,0,0,0,
    0,0,17,0,17,16,17,0,17,0,0,
@@ -134,3 +135,8 @@ int snow_color3[121] =
    0,0,17,0,17,16,17,0,17,0,0,
    0,0,0,17,0,9,0,17,0,0,0,
    0,0,0,0,17,16,17,0,0,0,0};
+
+
+/*The following parameters describe the MAIN
+ scene that I'll animate for my
+desktop background UwUr*/
