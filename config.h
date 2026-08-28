@@ -23,14 +23,14 @@ static const char *PALETTE[] = {
   "#204052", //cyan    
 };
 
-/* These parameters describe the animation that happens
- behind your pointer UwUr <3 <3*/
+/*All of these parameters describe the drawing
+ behind our pointer UWUr <*/
 
 static const unsigned int snow_width = 11;
 static const unsigned int snow_height = 11;
 static const unsigned int snow_cx = 5;
 static const unsigned int snow_cy = 5;
-static const unsigned int snow_length = 3;
+static const unsigned int snow_length = 4;
 
 static char snow_shape0[121] =
   "    \\|/    "
@@ -136,7 +136,50 @@ static unsigned int snow_color3[121] =
    0,0,0,17,0,9,0,17,0,0,0,
    0,0,0,0,17,16,17,0,0,0,0};
 
+/*Below this section the parameters for the main scene
+ will be drawn UwUr <3. I want to create a mildly
+horrorific scene about a harpy eating some person UwUr*/
 
-/*The following parameters describe the MAIN
- scene that I'll animate for my
-desktop background UwUr*/
+static const unsigned int main_width = 96;
+static const unsigned int main_height = 36;
+static const unsigned int main_cx = 48;
+static const unsigned int main_cy = 18;
+static const unsigned int main_length;
+
+static char main_shape0[3456] =
+  "|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|"
+  "|      _                                                                                       |"
+  "|    ' --                                                                                      |"
+  "|  / /    \                                                                                    |"
+  "| | |                                                                                          |"
+  "| | |                                                                                          |"
+  "|  \ \ __ /                                                                                    |"
+  "|   ',__-                                                                                      |"
+  "|                                                                                              |"
+  "|                                                                                              |"
+  "|                                                                                              |"
+  "|                                                                                              |"
+  "|                                                                                              |"
+  "|                                                                                              |"
+  "|  /¨¨¨\                                                                                       |"
+  "| }     ¨¨¨\   }¨¨¨\/\                                                                         |"
+  "| {¨\    ___\ |¨¨\  } {                                                                        |"
+  "|    \|\ \    \  {   \                                                                         |"
+  "|   ____\/    /  /   {     /¨¨¨\                                                               |"
+  "|  /    \|/¨¨|   {  / \___{  __ {                                                              |"
+  "| {  /¨¨¨|   /    \{      { /                                                                  |"
+  "|   |     \ /|\       /{   ¨__                                                                 |"
+  "|  /|\    |-l,.\|¨¨¨\/  \__/  {                                                                |"
+  "| / | \   |-\...{°\ {      \___                                                                |"
+  "| \ \  | /-.,°,,., | \___      {                                                               |"
+  "|  } | } |}{  |°.-,|     {¨¨\                                                                  |"
+  "|   /|\   \.{-.,{}}{\    /  |                                                                  |"
+  "|  { }{    |}{,.}°  /   /\  }                                                                  |"
+  "|         /|,}°  { |    \ \ {                                                                  |"
+  "|        /,}{|.|,-/     |  {                                                                   |"
+  "|       |-{,'{.,||      {   }            @     0                                               |"
+  "|      //\}{}{}.,{\                     /|\   /|\                                              |"
+  "|    _/}{,-,{},-.{|\_                    /\    /\                                              |"
+  "|.-,.-,.-,.-,.-,-.-.,-.-,.-,.-.-,.-,-,.-,.-,.-,-,.-,.-,-.,-,.-,.-,.-,.-,.-,.-,.-,.-,.-,.-,,.-.-|"
+  "|.-,.-,.-,,-,.-,.-,.,.,.-,.-,-,.,.,.-,.-,.-,.-,.-,.-,.-,.-,-.,.-,.-,.-,.-,.-,.-,.-,.-,.-,.-,.-,|"
+  "|______________________________________________________________________________________________|";
