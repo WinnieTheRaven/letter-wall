@@ -27,7 +27,7 @@ int main(void) {
   Display *dpy;
   int screen;
   Window root;
-  int scr_w, scr_h;
+  unsigned int scr_w, scr_h;
   unsigned int cols, rows;
   Pixmap pixmap;
   GC gc;
@@ -36,10 +36,10 @@ int main(void) {
   XColor xcolors[PALETTE_N];
   char* grid_shape;
   unsigned int* grid_color;
-  int i;
+  unsigned int i;
   unsigned int snow_frame = 0;
-  int CELL_W;
-  int CELL_H;
+  unsigned int CELL_W;
+  unsigned int CELL_H;
 
   dpy = XOpenDisplay(NULL);
   if (!dpy) {
@@ -50,8 +50,8 @@ int main(void) {
 
   screen = DefaultScreen(dpy);
   root = RootWindow(dpy, screen);
-  scr_w = DisplayWidth(dpy, screen);
-  scr_h = DisplayHeight(dpy, screen);
+  scr_w = (unsigned int) DisplayWidth(dpy, screen);
+  scr_h = (unsigned int) DisplayHeight(dpy, screen);
   cmap = DefaultColormap(dpy, screen);
 
   font = XLoadQueryFont(dpy,fontname);
@@ -63,9 +63,9 @@ int main(void) {
 
   /*Once the font is loaded then we  setup the font dimensions and
    the resolution of our background in characters UwUr <3*/
-  CELL_W = font->max_bounds.width;
-  CELL_H = (font->max_bounds.ascent) +
-    (font->max_bounds.descent);
+  CELL_W = (unsigned int) (font->max_bounds.width);
+  CELL_H = (unsigned int) ((font->max_bounds.ascent) +
+	    (font->max_bounds.descent));
   
   cols = scr_w / CELL_W;
   rows = scr_h / CELL_H;
@@ -82,20 +82,22 @@ int main(void) {
   gc = XCreateGC(dpy, root, 0, NULL);
   XSetFont(dpy, gc, font->fid);
 
-  pixmap = XCreatePixmap(dpy, root, scr_w, scr_h, DefaultDepth(dpy, screen));
+  pixmap = XCreatePixmap(dpy, root, scr_w, scr_h, (unsigned int) DefaultDepth(dpy, screen));
 
   /*In this section we initiallize the background*/
   grid_shape = malloc(sizeof(char) * cols * rows);
   grid_color = malloc(sizeof(unsigned int) * cols * rows);
-  for (int i = 0; i < (int) (cols*rows);i++) {
-    grid_color[i] = 0;
-    grid_shape[i] = ' ';
-  }
-  Frame grid = {grid_shape,grid_color,cols,rows, cols / 2, rows / 2};
   
   if (!grid_shape || !grid_color) {
     fprintf(stderr, "letter-wall: out of memory\n");
     return 1;
+  }
+  
+  Frame grid = {grid_shape,grid_color,cols,rows, cols / 2, rows / 2};
+  
+  for (i = 0; i < (cols*rows);i++) {
+    grid_color[i] = 0;
+    grid_shape[i] = ' ';
   }
 
   /*This for cycle contains the actual logic of the stuff
@@ -105,9 +107,9 @@ int main(void) {
     snow_frame++;
     snow_frame = snow_frame == snow_length ? 0 : snow_frame;
     Window ret_root, ret_child;
-    int root_x, root_y, win_x, win_y;
+    unsigned int root_x, root_y, win_x, win_y;
     unsigned int mask;
-    int px, py;
+    unsigned int px, py;
     unsigned int x, y;
 
     /* There might be a better way. But in this cycle we
@@ -122,7 +124,7 @@ int main(void) {
      root_x, root_y, win_x and win_y the position of the cursor
      by reference*/
     
-    XQueryPointer(dpy, root, &ret_root, &ret_child, &root_x, &root_y, &win_x,&win_y, &mask);
+    XQueryPointer(dpy, root, &ret_root, &ret_child, (int*) &root_x, (int*) &root_y, (int*) &win_x,(int*) &win_y, &mask);
 
     /*this is just a coordinate tranformation to capture into
      both px and py the position of the cursor from the point of
@@ -136,10 +138,7 @@ int main(void) {
     for (y = 0; y < snow_width; y++) {
       for (x = 0; x < snow_height; x++) {
 	/*getting the coordinates for the relevant cell*/
-        int dx = px - (int) x + (int) snow_cx, dy = py - (int) y + (int) snow_cy;
-	/*getting the addresses for the relevan cell*/
-        char *l = &grid.shape[dy * cols + dx];
-	unsigned int *c = &grid.color[dy * cols + dx];
+        unsigned int dx = px - x + snow_cx, dy = py - y + snow_cy;
 
 	/*assigning the corresponding color and letter to
 	  the cell checking boundaries UwUr*/
@@ -147,6 +146,9 @@ int main(void) {
 	    (dy * cols + dx >= rows * cols)) {
 	  continue;
 	} else {
+	  /*getting the addresses for the relevan cell*/
+	  char *l = &grid.shape[dy * cols + dx];
+	  unsigned int *c = &grid.color[dy * cols + dx];
 	  *l = snow_roll[snow_frame].shape[y * snow_width + x];
 	  *c = snow_roll[snow_frame].color[y * snow_width + x];
 	}
@@ -162,7 +164,7 @@ int main(void) {
 	unsigned int c = grid.color[y * cols + x];
 	char s[] = {l,'\0'};
         XSetForeground(dpy, gc, xcolors[c].pixel);
-	XDrawString(dpy,pixmap,gc,x * CELL_W,y * CELL_H + 11,s,1);
+	XDrawString(dpy,pixmap,gc,(int) (x * CELL_W),(int) (y * CELL_H + 11),s,1);
       }
     }
 

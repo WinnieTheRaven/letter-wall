@@ -12,16 +12,30 @@ CC = cc
 INCS = -I/usr/X11R6/include
 LIBS = -L/usr/X11R6/lib -lX11
 
+CPPFlags = ${INCS}
+CFLAGS = -std=c17 \
+	-Wall \
+	-Wextra \
+	-Wpedantic \
+	-Wconversion \
+	-Wsign-conversion \
+	-Wshadow \
+	-Wstrict-prototypes \
+	-Wmissing-prototypes \
+	-Wold-style-definition\
+	-Werror \
+	-O0 \
+	-g \
+
 LDFLAGS = ${LIBS}
-CFLAGS = -Wall -Wextra -O0 ${INCS}
 
 all: ${PROG}
 
 ${PROG}: ${OBJ}
-	${CC} -o $@ ${OBJ} ${LDFLAGS}
+	${CC} ${LDFLAGS} -o $@ ${OBJ}
 
-%.o: %.c
-	${CC} -c $< ${CFLAGS}
+.c.o:
+	${CC} ${CPPFlags} ${CFLAGS} -c $< -o $@
 
 clean:
 	-rm ${OBJ} ${PROG}
