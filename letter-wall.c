@@ -85,8 +85,9 @@ int main(void) {
   pixmap = XCreatePixmap(dpy, root, scr_w, scr_h, (unsigned int) DefaultDepth(dpy, screen));
 
   /*In this section we initiallize the background*/
-  grid_shape = malloc(sizeof(char) * cols * rows);
-  grid_color = malloc(sizeof(unsigned int) * cols * rows);
+  size_t total_cells = (size_t) cols * (size_t) rows;
+  grid_shape = malloc(total_cells * sizeof *grid_shape);
+  grid_color = malloc(total_cells * sizeof *grid_color);
   
   if (!grid_shape || !grid_color) {
     fprintf(stderr, "letter-wall: out of memory\n");
@@ -104,18 +105,17 @@ int main(void) {
    that is going to happen in the desktop background UwUr*/
   
   for (;;) {
-    snow_frame++;
-    snow_frame = snow_frame == snow_length ? 0 : snow_frame;
+    snow_frame = (snow_frame + 1) % snow_length;
     Window ret_root, ret_child;
-    unsigned int root_x, root_y, win_x, win_y;
+    int root_x, root_y, win_x, win_y;
     unsigned int mask;
-    unsigned int px, py;
-    unsigned int x, y;
+    int px, py;
+    int x, y;
 
     /* There might be a better way. But in this cycle we
      cleanup our baclground before redrawing UwUr <3*/
 
-    for (x = 0; x < cols * rows; x++) {
+    for (x = 0; x < (int) cols * (int) rows; x++) {
       grid.shape[x] = ' ';
       grid.color[x] = 0;
     }
@@ -124,33 +124,34 @@ int main(void) {
      root_x, root_y, win_x and win_y the position of the cursor
      by reference*/
     
-    XQueryPointer(dpy, root, &ret_root, &ret_child, (int*) &root_x, (int*) &root_y, (int*) &win_x,(int*) &win_y, &mask);
+    XQueryPointer(dpy, root, &ret_root, &ret_child, &root_x, &root_y, &win_x, &win_y, &mask);
 
     /*this is just a coordinate tranformation to capture into
      both px and py the position of the cursor from the point of
     view of the characters UwUr*/
     
-    px = root_x / CELL_W;
-    py = root_y / CELL_H;
+    px = root_x / (int) CELL_W;
+    py = root_y / (int) CELL_H;
 
     /*Inside these loops the pointer information gets set up*/
 
-    for (y = 0; y < snow_width; y++) {
-      for (x = 0; x < snow_height; x++) {
+    for (y = 0; y < (int) snow_height; y++) {
+      for (x = 0; x < (int) snow_width; x++) {
 	/*getting the coordinates for the relevant cell*/
-        unsigned int dx = px - x + snow_cx, dy = py - y + snow_cy;
+        int dx = px - x + (int) snow_cx;
+	int dy = py - y + (int) snow_cy;
 
 	/*assigning the corresponding color and letter to
 	  the cell checking boundaries UwUr*/
-	if ((dy * cols + dx < 0) ||
-	    (dy * cols + dx >= rows * cols)) {
+	if (dx < 0 || dx >= (int) cols ||
+	    dy < 0 || dy >= (int) rows) {
 	  continue;
 	} else {
 	  /*getting the addresses for the relevan cell*/
-	  char *l = &grid.shape[dy * cols + dx];
-	  unsigned int *c = &grid.color[dy * cols + dx];
-	  *l = snow_roll[snow_frame].shape[y * snow_width + x];
-	  *c = snow_roll[snow_frame].color[y * snow_width + x];
+	  char *l = &grid.shape[(unsigned int) dy * cols + (unsigned int) dx];
+	  unsigned int *c = &grid.color[(unsigned int) dy * cols + (unsigned int) dx];
+	  *l = snow_roll[snow_frame].shape[(unsigned int) y * snow_width + (unsigned int) x];
+	  *c = snow_roll[snow_frame].color[(unsigned int) y * snow_width + (unsigned int) x];
 	}
       }
     }
@@ -158,13 +159,15 @@ int main(void) {
     XSetForeground(dpy, gc, BlackPixel(dpy, screen));
     XFillRectangle(dpy, pixmap, gc, 0, 0, scr_w, scr_h);
 
-    for (y = 0; y < rows; y++) {
-      for (x = 0; x < cols; x++) {
-	char l = grid.shape[y * cols + x];
-	unsigned int c = grid.color[y * cols + x];
+    for (y = 0; y < (int) rows; y++) {
+      for (x = 0; x < (int) cols; x++) {
+	char l = grid.shape[(unsigned int) y * cols + (unsigned int) x];
+	unsigned int c = grid.color[(unsigned int) y * cols + (unsigned int) x];
 	char s[] = {l,'\0'};
-        XSetForeground(dpy, gc, xcolors[c].pixel);
-	XDrawString(dpy,pixmap,gc,(int) (x * CELL_W),(int) (y * CELL_H + 11),s,1);
+	if (l != ' ') {
+	  XSetForeground(dpy, gc, xcolors[c].pixel);
+	  XDrawString(dpy,pixmap,gc,x * (int) CELL_W,y * (int) CELL_H + (int) CELL_H,s,1);
+	}
       }
     }
 

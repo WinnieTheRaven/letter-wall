@@ -8,9 +8,13 @@ CC = cc
 #INCS = -I/usr/include/X11
 #LIBS = -lX11
 
+# uncomment if FreeBSD
+INCS = -I/usr/local/include
+LIBS = -L/usr/local/lib -lX11
+
 # uncomment if OpenBSD
-INCS = -I/usr/X11R6/include
-LIBS = -L/usr/X11R6/lib -lX11
+#INCS = -I/usr/X11R6/include
+#LIBS = -L/usr/X11R6/lib -lX11
 
 CPPFlags = ${INCS}
 CFLAGS = -std=c17 \
