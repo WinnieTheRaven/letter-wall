@@ -13,11 +13,30 @@
 #include "film.h"
 #include "config.h"
 
-#define FRAME_USEC 130000
+#define _POSIX_C_SOURCE 199309L
 
 #define PALETTE_N (sizeof(PALETTE) / sizeof(PALETTE[0]))
 
+/*function to get the timestamp and convert to microseconds since
+ usleep works at that scale*/
+
+static uint64_t clock_watch(void) {
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC,&ts);
+  return ((uint64_t) ts.tv_sec * 1000000ULL) + ((uint64_t) ts.tv_nsec / 1000ULL);
+}
+
+/*Function to convert between fps world and microsecond world*/
+
+static uint64_t fps_to_ms(int fps) {
+  return (uint64_t) 1000000 / (uint64_t) fps;
+}
+
 int main(void) {
+  
+  const uint64_t target_fps = fps_to_ms(which_fps);
+  uint64_t next_frame_marker = clock_watch();
+  
   Frame snow_roll[4] =
     {{snow_shape0,snow_color0,snow_width,snow_height,snow_cx,snow_cy},
      {snow_shape1,snow_color1,snow_width,snow_height,snow_cx,snow_cy},
@@ -91,6 +110,12 @@ int main(void) {
   
   if (!grid_shape || !grid_color) {
     fprintf(stderr, "letter-wall: out of memory\n");
+    free(grid_shape);
+    free(grid_color);
+    XFreePixmap(dpy,pixmap);
+    XFreeGC(dpy,gc);
+    XFreeFont(dpy,font);
+    XCloseDisplay(dpy);
     return 1;
   }
   
@@ -175,7 +200,25 @@ int main(void) {
     XClearWindow(dpy, root);
     XFlush(dpy);
 
-    usleep(FRAME_USEC);
+    /*Benchmarking to adjust time UwUr*/
+    
+    uint64_t current_time = clock_watch();
+
+    /*Are we on schedule?*/
+    if (current_time < next_frame_marker) {
+      uint64_t sleep_duration = next_frame_marker - current_time;
+      usleep((useconds_t) sleep_duration);
+    }
+
+    /* Did we lagged badly?*/
+    
+    if (current_time > next_frame_marker + target_fps) {
+      next_frame_marker = current_time;
+    }
+
+    /* Next bus stop for correct fps marking*/
+    next_frame_marker += target_fps;
+    
   }
 
   XFreeFont(dpy, font);

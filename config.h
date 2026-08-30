@@ -1,5 +1,7 @@
 static const char fontname[] = "spleen-8x16";
 
+static const int which_fps = 24;
+
 static const char *PALETTE[] = {
   /*The colors I've selected come from (literally) doom-outrun-electric*/
   "#0c0a20", //background-black
