@@ -1,8 +1,13 @@
 typedef struct {
-  char* shape;
-  unsigned int* color;
-  unsigned int frame_w;
-  unsigned int frame_h ;
-  unsigned int center_x;
-  unsigned int center_y;
+  const char* shape;
+  const unsigned int* color;
+  size_t frame_w;
+  size_t frame_h ;
+  size_t center_x;
+  size_t center_y;
 } Frame;
+
+typedef struct {
+  const frame *frames;
+  size_t length;
+} Movie;

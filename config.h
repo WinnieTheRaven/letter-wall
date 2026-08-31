@@ -28,13 +28,13 @@ static const char *PALETTE[] = {
 /*All of these parameters describe the drawing
  behind our pointer UWUr <3*/
 
-static const unsigned int snow_width = 11;
-static const unsigned int snow_height = 11;
-static const unsigned int snow_cx = 5;
-static const unsigned int snow_cy = 5;
-static const unsigned int snow_length = 4;
+static const size_t snow_width = 11;
+static const size_t snow_height = 11;
+static const size_t snow_cx = 5;
+static const size_t snow_cy = 5;
+static const size_t snow_length = 4;
 
-static char snow_shape0[121] =
+static const char snow_shape0[snow_width * snow_height] =
   "    \\|/    "
 "   \\ v /   "
 "  \\ \\|/ /  "
@@ -47,7 +47,7 @@ static char snow_shape0[121] =
 "   / ^ \\   "
 "    /|\\    ";
 
-static unsigned int snow_color0[121] =
+static const unsigned int snow_color0[snow_width * snow_height] =
   {0,0,0,0,18,17,18,0,0,0,0,
    0,0,0,18,0,16,0,18,0,0,0,
    0,0,18,0,18,17,18,0,18,0,0,
@@ -60,7 +60,7 @@ static unsigned int snow_color0[121] =
    0,0,0,18,0,16,0,18,0,0,0,
    0,0,0,0,18,17,18,0,0,0,0};
 
-static char snow_shape1[121] =
+static const char snow_shape1[snow_width * snow_height] =
   "    -\\|    "
   "   - > |   "
   "  - -\\| |  "
@@ -73,7 +73,7 @@ static char snow_shape1[121] =
   "   | < -   "
   "    |\\-    ";
 
-static unsigned int snow_color1[121] =
+static const unsigned int snow_color1[snow_width * snow_height] =
   {0,0,0,0,9,18,9,0,0,0,0,
    0,0,0,9,0,17,0,9,0,0,0,
    0,0,9,0,9,18,9,0,9,0,0,
@@ -86,7 +86,7 @@ static unsigned int snow_color1[121] =
    0,0,0,9,0,17,0,9,0,0,0,
    0,0,0,0,9,18,9,0,0,0,0};
 
-static char snow_shape2[121] =
+static const char snow_shape2[snow_width * snow_height] =
   "    /-\\    "
   "   / ^ \\   "
   "  / /-\\ \\  "
@@ -99,7 +99,7 @@ static char snow_shape2[121] =
   "   \\ v /   "
   "    \\-/    ";
 
-static unsigned int snow_color2[121] =
+static const unsigned int snow_color2[snow_width * snow_height] =
   {0,0,0,0,16,9,16,0,0,0,0,
    0,0,0,16,0,18,0,16,0,0,0,
    0,0,16,0,16,9,16,0,16,0,0,
@@ -112,7 +112,7 @@ static unsigned int snow_color2[121] =
    0,0,0,16,0,18,0,16,0,0,0,
    0,0,0,0,16,9,16,0,0,0,0};
 
-static char snow_shape3[121] =
+static const char snow_shape3[snow_width * snow_height] =
   "    |/-    "
   "   | < -   "
   "  | |/- -  "
@@ -125,7 +125,7 @@ static char snow_shape3[121] =
   "   - > |   "
   "    -/|    ";
 
-static unsigned int snow_color3[121] =
+static const unsigned int snow_color3[snow_width * snow_height] =
   {0,0,0,0,17,16,17,0,0,0,0,
    0,0,0,17,0,9,0,17,0,0,0,
    0,0,17,0,17,16,17,0,17,0,0,

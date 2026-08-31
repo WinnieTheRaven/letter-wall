@@ -6,14 +6,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#define _POSIX_C_SOURCE 199309L
 #include <time.h>
 #include <unistd.h>
 #include <err.h>
 /*personal modules created for this project UwUr*/
 #include "film.h"
 #include "config.h"
-
-#define _POSIX_C_SOURCE 199309L
 
 #define PALETTE_N (sizeof(PALETTE) / sizeof(PALETTE[0]))
 
@@ -28,16 +27,16 @@ static uint64_t clock_watch(void) {
 
 /*Function to convert between fps world and microsecond world*/
 
-static uint64_t fps_to_ms(int fps) {
+static uint64_t fps_to_us(int fps) {
   return (uint64_t) 1000000 / (uint64_t) fps;
 }
 
 int main(void) {
   
-  const uint64_t target_fps = fps_to_ms(which_fps);
+  const uint64_t target_fps = fps_to_us(which_fps);
   uint64_t next_frame_marker = clock_watch();
   
-  Frame snow_roll[4] =
+  Frame const snow_roll[4] =
     {{snow_shape0,snow_color0,snow_width,snow_height,snow_cx,snow_cy},
      {snow_shape1,snow_color1,snow_width,snow_height,snow_cx,snow_cy},
      {snow_shape2,snow_color2,snow_width,snow_height,snow_cx,snow_cy},
