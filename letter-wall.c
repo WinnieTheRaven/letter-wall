@@ -5,6 +5,8 @@
 #include <X11/XKBlib.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
 #include <string.h>
 #define _POSIX_C_SOURCE 199309L
 #include <time.h>
@@ -16,6 +18,17 @@
 
 #define PALETTE_N (sizeof(PALETTE) / sizeof(PALETTE[0]))
 
+/*This variable represents if the program should keep running.
+ signints maybe necessary*/
+volatile int are_we_running = 1;
+
+/*This function listens for sigints and changes the state
+ of "are_we_runnning" so that a deep cleanup can follow*/
+
+void handle_sigint (int sig) {
+  are_we_running = 0;
+}
+
 /*function to get the timestamp and convert to microseconds since
  usleep works at that scale*/
 
@@ -25,18 +38,35 @@ static uint64_t clock_watch(void) {
   return ((uint64_t) ts.tv_sec * 1000000ULL) + ((uint64_t) ts.tv_nsec / 1000ULL);
 }
 
-/*Function to convert between fps world and microsecond world*/
+/*Function to convert between fps world and microsecond world
+ (C does't allow characters like the literal mu. so a 'u'
+ is a close "enough glyph" it seems). I mention this because as a
+naive person I used 'm' to stand for micro but I was quickly corrected XD.
+m usually stands for "milli"*/
 
 static uint64_t fps_to_us(int fps) {
   return (uint64_t) 1000000 / (uint64_t) fps;
 }
 
 int main(void) {
+  /* This code block creates and configures a sigaction structure
+   it defines how the sigaction system call handles the signals. In
+  this particular case SIGINTS (CTRL+C)*/
+  struct sigaction sa;
+  //here we tell what to do in case of a sigint
+  sa.sa_handler = handle_sigint;
+  //here we say that no signal should be blocked
+  sigemptyset(&sa.sa_mask);
+  /*It seems that this just tells the machine to manage syscalls cleanly*/
+  sa.sa_flags = SA_RESTART;
+  if (sigaction(SIGINT,&sa,NULL) == -1) {
+    perror("Error registering the sigaction")
+  }
   
   const uint64_t target_fps = fps_to_us(which_fps);
   uint64_t next_frame_marker = clock_watch();
   
-  Frame const snow_roll[4] =
+  const Frame snow_roll[4] =
     {{snow_shape0,snow_color0,snow_width,snow_height,snow_cx,snow_cy},
      {snow_shape1,snow_color1,snow_width,snow_height,snow_cx,snow_cy},
      {snow_shape2,snow_color2,snow_width,snow_height,snow_cx,snow_cy},
@@ -63,6 +93,7 @@ int main(void) {
   if (!dpy) {
     fprintf(stderr,"letter-wall: Dunno why I couldn't open X display,"
 	    " help?!\n");
+    goto clean_display;
     return 1;
   }
 
@@ -75,7 +106,7 @@ int main(void) {
   font = XLoadQueryFont(dpy,fontname);
   if (!font) {
     fprintf(stderr, "letter-wall:could not load font '%s'\n",fontname);
-    XCloseDisplay(dpy);
+    goto clean_font;
     return 1;
   }
 
@@ -88,11 +119,11 @@ int main(void) {
   cols = scr_w / CELL_W;
   rows = scr_h / CELL_H;
   
-  for (i = 0; i < (int)PALETTE_N; i++) {
+  for (i = 0; i < (int) PALETTE_N; i++) {
     if (!XParseColor(dpy, cmap, PALETTE[i], &xcolors[i]) ||
         !XAllocColor(dpy, cmap, &xcolors[i])) {
       fprintf(stderr, "letter-wall: failed to allocate color %s\n", PALETTE[i]);
-      XCloseDisplay(dpy);
+      goto clean_color;
       return 1;
     }
   }
@@ -102,6 +133,9 @@ int main(void) {
 
   pixmap = XCreatePixmap(dpy, root, scr_w, scr_h, (unsigned int) DefaultDepth(dpy, screen));
 
+  if (!pixmap) {
+  }
+
   /*In this section we initiallize the background*/
   size_t total_cells = (size_t) cols * (size_t) rows;
   grid_shape = malloc(total_cells * sizeof *grid_shape);
@@ -109,12 +143,7 @@ int main(void) {
   
   if (!grid_shape || !grid_color) {
     fprintf(stderr, "letter-wall: out of memory\n");
-    free(grid_shape);
-    free(grid_color);
-    XFreePixmap(dpy,pixmap);
-    XFreeGC(dpy,gc);
-    XFreeFont(dpy,font);
-    XCloseDisplay(dpy);
+    goto clean_up;
     return 1;
   }
   
@@ -128,7 +157,7 @@ int main(void) {
   /*This for cycle contains the actual logic of the stuff
    that is going to happen in the desktop background UwUr*/
   
-  for (;;) {
+  while (are_we_running) {
     snow_frame = (snow_frame + 1) % snow_length;
     Window ret_root, ret_child;
     int root_x, root_y, win_x, win_y;
@@ -220,11 +249,15 @@ int main(void) {
     
   }
 
-  XFreeFont(dpy, font);
-  XFreeGC(dpy, gc);
-  XFreePixmap(dpy, pixmap);
-  free(grid_color);
+ clean_up:
   free(grid_shape);
+  free(grid_color);
+  XFreePixmap(dpy,pixmap);
+  XFreeGC(dpy,gc);
+ clean_font:
+  XFreeFont(dpy,font);
+ clean_display:
   XCloseDisplay(dpy);
+  
   return 0;
 }
